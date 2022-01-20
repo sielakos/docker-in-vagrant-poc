@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  client:
+    image: docker-client
+    build:
+      context: ./
+      dockerfile: ./client/Dockerfile
+    environment:
+      DOCKER_HOST: tcp://172.38.1.18:2375
+    networks:
+      - default
+    # cap_add:
+    #   - ALL
+
+  docker-vm-deamon:
+    image: docker-host
+    build:
+      context: ./
+      dockerfile: ./deamon/Dockerfile
+    privileged: true
+    network_mode: "host"
+    volumes:
+      - "/tmp:/tmp"
+      - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
+      - "/lib/modules:/lib/modules"
+    devices:
+      - "/dev/vboxdrv:/dev/vboxdrv"
+    cap_add:
+      - ALL

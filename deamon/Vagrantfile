@@ -1,0 +1,58 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  config.vm.box = "alvistack/ubuntu-21.04"
+  # config.vm.synced_folder ".", "/vagrant", fsnotify: true
+  config.vm.network "private_network", ip: "172.38.1.18"
+  # config.vm.network "public_network", ip: "172.38.1.18", bridge: ENV['NETWORK_DEVICE'], dev: ENV['NETWORK_DEVICE'], mode: "bridge", type: "bridge"
+
+  config.vm.network "forwarded_port", guest: 2375, host: 4375
+  # config.vm.network "forwarded_port", guest: 2377, host: 2377 
+  # config.vm.network "forwarded_port", guest: 7946, host: 7946, protocol: "tcp"
+  # config.vm.network "forwarded_port", guest: 7946, host: 7946, protocol: "udp"
+  # config.vm.network "forwarded_port", guest: 4789, host: 4789, protocol: "udp"
+
+  config.vm.provider "virtualbox" do |vb|
+    # Customize the amount of memory on the VM:
+    vb.memory = "16024"
+    vb.cpus = 8
+  end
+
+  # config.trigger.after :up do |t|
+  #   t.name = "vagrant-fsnotify"
+  #   t.run = { inline: "vagrant fsnotify" }
+  # end
+
+  # config.vm.provision "shell", env: {"SWARM_TOKEN" => ENV["SWARM_TOKEN"]}, inline: <<-SHELL
+  config.vm.provision "shell", inline: <<-SHELL
+    apt-get update
+    apt-get install -y ca-certificates curl gnupg lsb-release
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+    echo  "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+          $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+    apt-get update
+    apt-get install -y docker docker-compose
+    apt-get install -y criu
+    mkdir -p /etc/docker
+    echo '{"experimental": true}' >> /etc/docker/daemon.json
+    mkdir -p /etc/systemd/system/docker.service.d
+    echo "[Service]\nExecStart=\nExecStart=/usr/bin/dockerd -H unix:// -H tcp://0.0.0.0:2375" > /etc/systemd/system/docker.service.d/options.conf
+    sudo usermod -aG docker vagrant
+    systemctl enable docker.service
+    systemctl restart docker.service
+    apt install net-tools
+    # ufw allow 2377/tcp
+    # ufw allow 7946/tcp
+    # ufw allow 7946/udp
+    # ufw allow 4789/tcp
+    # docker swarm join --token $SWARM_TOKEN $(netstat -rn | grep "^0.0.0.0 " | cut -d " " -f10):2377
+    docker swarm init --advertise-addr 172.38.1.18
+    docker network create --driver overlay --attachable test-net
+  SHELL
+
+  # config.vm.provision "shell", env: {"SWARM_TOKEN" => ENV["SWARM_TOKEN"]}, run: 'always', inline: <<-SHELL
+  #   docker swarm join --token $SWARM_TOKEN $(netstat -rn | grep "^0.0.0.0 " | cut -d " " -f10):2377
+  # SHELL
+end
