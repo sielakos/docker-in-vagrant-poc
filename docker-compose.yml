@@ -1,11 +1,11 @@
 version: "3.9"
 
-networks:
-  net1:
-    ipam:
-      driver: default
-      config:
-        - subnet: 172.21.0.0/16
+# networks:
+#   net1:
+#     ipam:
+#       driver: default
+#       config:
+#         - subnet: 172.21.0.0/16
 
 
 services:
@@ -14,9 +14,9 @@ services:
     build:
       context: ./
       dockerfile: ./client/Dockerfile
-    networks:
-      - default
-      - net1
+    # networks:
+    #   - default
+    #   - net1
     # network_mode: "service:docker-vm-deamon"
     environment:
       DOCKER_HOST: tcp://10.40.1.18:2375

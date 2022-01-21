@@ -11,7 +11,7 @@ docker-compose up -d
 cd ./deamon && vagrant up || true
 
 # export SWARM_IP=172.21.1.18
-export SWARM_IP=10.40.1.18
+export SWARM_IP=192.168.56.201
 
 echo "Waiting for swarm manager to get up, can take a while"
 
