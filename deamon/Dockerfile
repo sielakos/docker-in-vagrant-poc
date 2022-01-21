@@ -12,4 +12,4 @@ RUN vagrant init alvistack/ubuntu-21.04
 RUN vagrant box add --provider virtualbox alvistack/ubuntu-21.04 
 COPY ./deamon/Vagrantfile /app/
 COPY ./deamon/start.sh /app/
-CMD ./start.sh
+CMD ./start.sh 
