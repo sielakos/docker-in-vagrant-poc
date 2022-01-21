@@ -19,7 +19,7 @@ services:
     #   - net1
     # network_mode: "service:docker-vm-deamon"
     environment:
-      DOCKER_HOST: tcp://10.40.1.18:2375
+      DOCKER_HOST: tcp://192.168.56.201:2375
     # cap_add:
     #   - ALL
 
