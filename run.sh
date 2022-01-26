@@ -40,7 +40,7 @@ echo "Connected succesfully"
 echo "Create docker overlay network on swarm manager"
 
 # DOCKER_HOST=tcp://$SWARM_IP:2375 docker network create --driver=bridge --attachable code-layer-network --subnet 10.200.0.0/16
-DOCKER_HOST=tcp://$SWARM_IP:2375 docker network create --driver=overlay --attachable code-layer-network --subnet 10.200.0.0/16
+DOCKER_HOST=tcp://$SWARM_IP:2375 docker network create --driver=overlay --attachable code-layer-network --subnet 10.200.0.0/16 || true
 
 echo "Connect client container to overlay network"
 export CLIENT_ID=$(docker ps -a | grep client | awk -F ' ' '{ print $1 }')
