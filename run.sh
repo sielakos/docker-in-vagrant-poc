@@ -33,7 +33,7 @@ echo "Swarm manager is up, connecting"
 export SWARM_TOKEN=$(DOCKER_HOST=tcp://$SWARM_IP:2375 docker swarm join-token -q worker)
 echo $SWARM_TOKEN
 
-docker swarm join --token $SWARM_TOKEN $SWARM_IP:2377 --advertise-addr 192.168.56.1 
+docker swarm join --token $SWARM_TOKEN $SWARM_IP:2377
 
 echo "Connected succesfully"
 
